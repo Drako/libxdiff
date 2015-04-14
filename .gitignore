@@ -1,0 +1,13 @@
+# cmake
+build*/
+
+# sublime
+*.sublime-*
+
+# qtcreator
+CMakeLists.txt.user
+
+# kdevelop
+*.kdev4
+.kdev4/
+

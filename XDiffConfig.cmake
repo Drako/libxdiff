@@ -1,0 +1,2 @@
+INCLUDE ( "${CMAKE_CURRENT_LIST_DIR}/XDiffTargets.cmake" )
+SET ( XDIFF_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../../include" )
