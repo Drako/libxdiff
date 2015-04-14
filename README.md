@@ -12,7 +12,11 @@ Original project can be found here: http://www.xmailserver.org/xdiff-lib.html
 
 The fork is based on the version 0.23 source tarball.
 
+I also converted the library to a shared library (so/dll) so the license is actually useful...
+LGPL with a static library is kind of not useful.
+
 LICENSE
 =======
 
 LGPL version 2.1 (See COPYING or http://www.gnu.org/copyleft/lesser.html)
+
