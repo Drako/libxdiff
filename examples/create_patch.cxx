@@ -11,27 +11,32 @@
 
 // an xdiff allocator using the C memory functions
 class MallocAllocator
-        : public memallocator_t {
+        : public memallocator_t
+{
 public:
-    MallocAllocator() {
-        this->priv = this;
-        this->malloc = &allocate;
-        this->free = &release;
+    MallocAllocator()
+    {
+        this->priv    = this;
+        this->malloc  = &allocate;
+        this->free    = &release;
         this->realloc = &reallocate;
     }
 
 private:
-    static void *allocate(void *_this, unsigned size) {
+    static void *allocate(void *_this, unsigned size)
+    {
         (void) _this;
         return std::malloc(size);
     }
 
-    static void release(void *_this, void *ptr) {
+    static void release(void *_this, void *ptr)
+    {
         (void) _this;
         std::free(ptr);
     }
 
-    static void *reallocate(void *_this, void *ptr, unsigned size) {
+    static void *reallocate(void *_this, void *ptr, unsigned size)
+    {
         (void) _this;
         return std::realloc(ptr, size);
     }
@@ -39,18 +44,22 @@ private:
 
 // wrapper for libxdiff in-memory files
 class MMFile
-        : public mmfile_t {
+        : public mmfile_t
+{
 public:
-    MMFile(long bsize, unsigned long flags) {
+    MMFile(long bsize, unsigned long flags)
+    {
         if (xdl_init_mmfile(this, bsize, flags) == -1)
             throw std::runtime_error("xdl_init_mmfile");
     }
 
-    ~MMFile() {
+    ~MMFile()
+    {
         xdl_free_mmfile(this);
     }
 
-    void load(std::string const &filename) {
+    void load(std::string const &filename)
+    {
         std::ifstream f(filename, std::ios::binary);
         if (!f.is_open())
             throw std::runtime_error("std::ifstream::open");
@@ -63,7 +72,8 @@ public:
         f.read(buffer, size);
     }
 
-    void diff(MMFile &fold, MMFile &fnew) {
+    void diff(MMFile &fold, MMFile &fnew)
+    {
         bdiffparam_t params;
         params.bsize = 32;
 
@@ -75,46 +85,53 @@ public:
             throw std::runtime_error("xdl_bdfiff");
     }
 
-    void store(std::string const &filename) {
+    void store(std::string const &filename)
+    {
         std::ofstream f(filename, std::ios::binary);
         if (!f.is_open())
             throw std::runtime_error("std::ofstream::open");
 
         long size;
         char *buffer = static_cast<char *>(xdl_mmfile_first(this, &size));
-        while (buffer) {
+        while (buffer)
+        {
             f.write(buffer, size);
             buffer = static_cast<char *>(xdl_mmfile_next(this, &size));
         }
     }
 
-    int append_buffers(mmbuffer_t *buffers, int count) {
+    int append_buffers(mmbuffer_t *buffers, int count)
+    {
         xdl_writem_mmfile(this, buffers, count);
         return 0;
     }
 
 private:
-    static int append_buffers(void *_this, mmbuffer_t *buffers, int count) {
+    static int append_buffers(void *_this, mmbuffer_t *buffers, int count)
+    {
         return static_cast<MMFile *>(_this)->append_buffers(buffers, count);
     }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     // check arguments
-    if (argc != 4) {
+    if (argc != 4)
+    {
         std::cerr << "Usage: \"" << argv[0] << "\" [old] [new] [patch]\n";
         return 1;
     }
 
-    std::string name_old = argv[1];
-    std::string name_new = argv[2];
+    std::string name_old   = argv[1];
+    std::string name_new   = argv[2];
     std::string name_patch = argv[3];
 
     // create the allocator for libxdiff
     MallocAllocator allocator;
     xdl_set_allocator(&allocator);
 
-    try {
+    try
+    {
         // load the original
         MMFile file_old(1024, XDL_MMF_ATOMIC);
         file_old.load(name_old);
@@ -128,7 +145,8 @@ int main(int argc, char **argv) {
         file_patch.diff(file_old, file_new);
         file_patch.store(name_patch);
     }
-    catch (std::exception const &ex) {
+    catch (std::exception const &ex)
+    {
         std::cerr << "An exception was thrown: " << ex.what() << "\n";
         return 2;
     }
