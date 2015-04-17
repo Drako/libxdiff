@@ -46,6 +46,13 @@ CHECK_FUNCTION_EXISTS ( memset HAVE_MEMSET )
 CHECK_FUNCTION_EXISTS ( realloc HAVE_REALLOC )
 CHECK_FUNCTION_EXISTS ( strlen HAVE_STRLEN )
 
+OPTION ( BUILD_SHARED "Build shared libraries" OFF )
+IF ( BUILD_SHARED )
+    SET ( LIBRARY_TYPE SHARED )
+ELSE ()
+    SET ( LIBRARY_TYPE STATIC )
+ENDIF ()
+
 CONFIGURE_FILE ( config.h.in config.h )
 
 FILE ( GLOB libxdiff_SOURCES src/*.c )
@@ -53,11 +60,11 @@ FILE ( GLOB libxdiff_HEADERS include/*.h )
 
 INCLUDE_DIRECTORIES ( include/ )
 
-IF ( WIN32 )
+IF ( WIN32 AND BUILD_SHARED )
     SET ( xdiff_EXPORTS xdiff.def )
 ENDIF ()
 
-ADD_LIBRARY ( xdiff SHARED ${libxdiff_SOURCES} ${libxdiff_HEADERS} ${xdiff_EXPORTS} )
+ADD_LIBRARY ( xdiff ${LIBRARY_TYPE} ${libxdiff_SOURCES} ${libxdiff_HEADERS} ${xdiff_EXPORTS} )
 IF ( HAVE_DLFCN_H )
     TARGET_LINK_LIBRARIES ( xdiff dl )
 ENDIF ()
