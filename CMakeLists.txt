@@ -55,6 +55,11 @@ ENDIF ()
 
 CONFIGURE_FILE ( config.h.in config.h )
 
+IF ( BIICODE )
+    INCLUDE ( "biicode.cmake" )
+    RETURN ()
+ENDIF ()
+
 FILE ( GLOB libxdiff_SOURCES src/*.c )
 FILE ( GLOB libxdiff_HEADERS include/*.h )
 
@@ -68,8 +73,6 @@ ADD_LIBRARY ( xdiff ${LIBRARY_TYPE} ${libxdiff_SOURCES} ${libxdiff_HEADERS} ${xd
 IF ( HAVE_DLFCN_H )
     TARGET_LINK_LIBRARIES ( xdiff dl )
 ENDIF ()
-
-ADD_SUBDIRECTORY ( examples )
 
 SET_PROPERTY ( TARGET xdiff PROPERTY VERSION ${XDIFF_VERSION} )
 SET_PROPERTY ( TARGET xdiff PROPERTY SOVERSION 0 )
