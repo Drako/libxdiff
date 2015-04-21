@@ -56,6 +56,7 @@ ENDIF ()
 CONFIGURE_FILE ( config.h.in config.h )
 
 IF ( BIICODE )
+    INCLUDE ( "${CMAKE_HOME_DIRECTORY}/biicode.cmake" )
     INCLUDE ( "biicode.cmake" )
     RETURN ()
 ENDIF ()
